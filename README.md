@@ -53,6 +53,30 @@ The system follows a **Hub-and-Spoke** architecture:
 3.  **SEO Agent (Sheets):** Connects to Google Sheets (Screaming Frog exports). Includes "Fuzzy Column Matching" and "Auto-Type Conversion".
 4.  **Fusion Layer:** A Pandas-based logic block that normalizes URLs (stripping protocols/trailing slashes) to merge dataset A and B.
 
+graph TD
+    User[User Query] --> API[FastAPI Server]
+    API --> Orch[Orchestrator]
+    
+    %% Routing Logic
+    Orch -->|Intent: GA4| GA4_Agent[Analytics Agent]
+    Orch -->|Intent: SEO| SEO_Agent[SEO Agent]
+    Orch -->|Intent: BOTH| Fusion[Fusion Layer]
+    
+    %% Data Sources
+    GA4_Agent <-->|Google Analytics Data API| Google[Google Cloud]
+    SEO_Agent <-->|Pandas Read| CSV[Google Sheets / CSV]
+    
+    %% Fusion Logic
+    Fusion -->|Fetch Metrics| GA4_Agent
+    Fusion -->|Fetch Metadata| SEO_Agent
+    Fusion -->|Normalize & Join| PandasEngine[Pandas Merge Engine]
+    
+    %% Output
+    GA4_Agent --> Response
+    SEO_Agent --> Response
+    PandasEngine --> Response
+    Response --> User
+
 ---
 
 ## 🛠️ Setup & Installation
