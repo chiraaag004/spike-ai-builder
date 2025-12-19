@@ -62,7 +62,7 @@ print("🚀 STARTING FULL EVALUATION SUITE...")
 
 # Run a selection to demonstrate (You can uncomment others)
 
-# run_test("Tier 1: Basic Traffic", tier1_tests[random.randint(0, len(tier1_tests)-1)])
-# run_test("Tier 2: Error Check", tier2_tests[random.randint(0, len(tier2_tests)-1)])
-# run_test("Tier 2: Grouping Logic", tier2_tests[2])
+run_test("Tier 1: Basic Traffic", tier1_tests[random.randint(0, len(tier1_tests)-1)])
+run_test("Tier 2: Error Check", tier2_tests[random.randint(0, len(tier2_tests)-1)])
+run_test("Tier 2: Grouping Logic", tier2_tests[2])
 run_test("Tier 3: Fusion (Views + Titles)", tier3_tests[random.randint(0, len(tier3_tests)-1)])
