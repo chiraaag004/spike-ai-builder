@@ -53,6 +53,7 @@ The system follows a **Hub-and-Spoke** architecture:
 3.  **SEO Agent (Sheets):** Connects to Google Sheets (Screaming Frog exports). Includes "Fuzzy Column Matching" and "Auto-Type Conversion".
 4.  **Fusion Layer:** A Pandas-based logic block that normalizes URLs (stripping protocols/trailing slashes) to merge dataset A and B.
 
+```mermaid
 graph TD
     User[User Query] --> API[FastAPI Server]
     API --> Orch[Orchestrator]
@@ -76,7 +77,6 @@ graph TD
     SEO_Agent --> Response
     PandasEngine --> Response
     Response --> User
-
 ---
 
 ## 🛠️ Setup & Installation
