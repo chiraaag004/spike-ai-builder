@@ -77,6 +77,8 @@ graph TD
     SEO_Agent --> Response
     PandasEngine --> Response
     Response --> User
+```
+
 ---
 
 ## 🛠️ Setup & Installation
