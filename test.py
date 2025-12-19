@@ -1,45 +1,68 @@
 import requests
+import time
 import json
-import os
-from dotenv import load_dotenv
+import random
 
-# Load env to get your test Property ID
-load_dotenv()
-PROPERTY_ID = os.getenv("PROPERTY_ID", "123456789") 
-URL = "http://localhost:8080/query"
+BASE_URL = "http://localhost:8080/query"
 
-def send_query(name, payload):
+def run_test(name, payload):
     print(f"\n🔹 --- TEST: {name} ---")
     print(f"Query: {payload['query']}")
     try:
-        # Timeout set to 60s because LLMs can be slow
-        response = requests.post(URL, json=payload, timeout=120) 
+        start = time.time()
+        response = requests.post(BASE_URL, json=payload, timeout=120)
+        elapsed = time.time() - start
         
         if response.status_code == 200:
-            data = response.json()
-            print(f"✅ STATUS: 200 OK")
-            print(f"🤖 AGENT RESPONSE:\n{data['response']}")
+            print(f"✅ STATUS: 200 OK ({elapsed:.2f}s)")
+            print(f"🤖 AGENT RESPONSE:\n{response.json()['response']}")
         else:
-            print(f"❌ ERROR {response.status_code}: {response.text}")
-            
+            print(f"❌ ERROR: {response.status_code}")
+            print(response.text)
     except Exception as e:
-        print(f"❌ CONNECTION FAILED: {str(e)}")
+        print(f"❌ EXCEPTION: {e}")
 
-if __name__ == "__main__":
-    send_query("Tier 1 - Analytics (GA4)", {
-        "propertyId": PROPERTY_ID,
-        "query": "How many active users and sessions did we have in the last 7 days?"
-    })
+# --- TIER 1: ANALYTICS (5 Cases) ---
+tier1_tests = [
+    {"query": "How many active users in the last 7 days?", "propertyId": "DEMO_MODE"},
+    {"query": "What is the bounce rate for mobile users?", "propertyId": "DEMO_MODE"},
+    {"query": "Show me sessions breakdown by city.", "propertyId": "DEMO_MODE"},
+    {"query": "Compare new users vs returning users.", "propertyId": "DEMO_MODE"},
+    {"query": "Which source/medium drove the most traffic?", "propertyId": "DEMO_MODE"},
+]
 
-    send_query("Tier 2 - SEO (Internal Tab)", {
-        "query": "Calculate the percentage of indexable pages on the site. Based on this number, assess whether the site’s technical SEO health is good, average, or poor."
-    })
+# --- TIER 2: SEO (5 Cases) ---
+tier2_tests = [
+    {"query": "Show me all pages with 404 errors."},
+    {"query": "List pages with titles longer than 60 characters."},
+    {"query": "Group pages by Indexability status."},
+    {"query": "What percentage of pages are non-indexable?"},
+    {"query": "Show me pages with missing H1 tags."},
+]
 
-    send_query("Tier 3 - SEO (Response Codes Tab)", {
-        "query": "How many URLs are returning 200 codes?"
-    })
+# --- TIER 3: FUSION (5 Cases) ---
+tier3_tests = [
+    # 1. Basic Merge (Checks if Title exists)
+    {"query": "What is the title of the most viewed page?", "propertyId": "TEST"},
+    
+    # 2. Meta Data Check (Checks if Description exists)
+    {"query": "Does the top traffic page have a meta description? If yes, what is it?", "propertyId": "TEST"},
+    
+    # 3. Technical SEO Check (Checks Status Code/Indexability)
+    {"query": "Is the most viewed page indexable and what is its status code?", "propertyId": "TEST"},
+    
+    # 4. Content Check (Checks H1 tag)
+    {"query": "What is the H1 tag of the homepage?", "propertyId": "TEST"},
+    
+    # 5. Combined Metrics (Views + Tech)
+    {"query": "Report the views, active users, and title for the top page.", "propertyId": "TEST"},
+]
 
-    send_query("Fusion (GA4 + SEO)", {
-        "propertyId": "TEST",
-        "query": "What are the top 5 pages by views and what are their title tags?"
-    })
+print("🚀 STARTING FULL EVALUATION SUITE...")
+
+# Run a selection to demonstrate (You can uncomment others)
+
+# run_test("Tier 1: Basic Traffic", tier1_tests[random.randint(0, len(tier1_tests)-1)])
+# run_test("Tier 2: Error Check", tier2_tests[random.randint(0, len(tier2_tests)-1)])
+# run_test("Tier 2: Grouping Logic", tier2_tests[2])
+run_test("Tier 3: Fusion (Views + Titles)", tier3_tests[random.randint(0, len(tier3_tests)-1)])
